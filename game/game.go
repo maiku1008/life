@@ -18,6 +18,7 @@ func newGame() *game {
 	return &game{
 		universe: u,
 		pixels:   make([]byte, screenWidth*screenHeight*4),
+		active:   true,
 	}
 }
 
@@ -89,6 +90,7 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Run the game
 func Run() error {
 	g := newGame()
+	g.universe.Init((screenWidth * screenWidth) / 4)
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 	ebiten.SetWindowTitle(title)
 	err := ebiten.RunGame(g)
