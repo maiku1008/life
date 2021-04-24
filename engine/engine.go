@@ -11,7 +11,7 @@ func init() {
 
 func NewUniverse(width, height int) *Universe {
 	return &Universe{
-		grid:   make([]bool, width*height),
+		cells:  make([]bool, width*height),
 		width:  width,
 		height: height,
 	}
@@ -20,21 +20,28 @@ func NewUniverse(width, height int) *Universe {
 type Universe struct {
 	// Use a 1d slice to represent 2d data
 	// https://learnsfml.com/2d-data-in-a-1d-array/
-	grid   []bool
+	cells  []bool
 	width  int
 	height int
 }
 
 // Resurrect a cell
 func (u *Universe) Resurrect(x, y int) {
-	u.grid[x+y*u.width] = true
+	if u.isInBounds(x, y) {
+		u.cells[x+y*u.width] = true
+	}
+}
+
+// Nuke all cells into a blank slate
+func (u *Universe) Nuke() {
+	u.cells = make([]bool, u.width*u.height)
 }
 
 // Print how many live cells are existing at one point
 // Used for debugging
 func (u *Universe) GetLiving() int {
 	var count int
-	for _, v := range u.grid {
+	for _, v := range u.cells {
 		if v {
 			count++
 		}
@@ -53,7 +60,7 @@ func (u *Universe) Init(maxLiveCells int) {
 
 // Return if a cell is alive
 func (u *Universe) isAlive(x, y int) bool {
-	return u.grid[x+y*u.width]
+	return u.cells[x+y*u.width]
 }
 
 // Get the state of a cell's neighbours.
@@ -114,10 +121,10 @@ func (u *Universe) Update() {
 			next[x+y*u.width] = u.GetNextGenerationState(x, y)
 		}
 	}
-	u.grid = next
+	u.cells = next
 }
 
-// Print returns the entire slice of pixels
-func (u *Universe) Print() []bool {
-	return u.grid
+// Cells returns the entire slice of cells
+func (u *Universe) Cells() []bool {
+	return u.cells
 }
